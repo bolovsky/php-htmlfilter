@@ -1,0 +1,6 @@
+*~
+htmlfilter/*.log
+htmlfilter/.temp
+htmlfilter/ext/
+.vagrant/
+.idea/
