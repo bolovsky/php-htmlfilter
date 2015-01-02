@@ -32,7 +32,7 @@ class Filter
 
     /**
      * Holds the regular replacers fo html "dangerous" chars
-     * @var array replaceres
+     * @var array replacers
      */
     protected replacers = ["&": "&amp;", "<": "&lt;", ">": "&gt;"] {
         get
@@ -112,7 +112,7 @@ class Filter
      */
     protected function clearOddChars(string! text)
     {
-        let text = preg_replace("`[\x00-\x08\x0b-\x0c\x0e-\x1f]`", "", text);
+        let text = preg_replace("`[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]`", "", text);
 
         if isset(this->config["clean_ms_char"]) {
             var exclude = [

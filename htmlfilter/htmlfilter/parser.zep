@@ -11,19 +11,30 @@ class Parser
     };
 
     /**
-     * Holds the html elements that are considered empty
-     * @var array emptyElements
+     * List of valid html tags
+     * @var array validHtmlTags
      */
-    protected emptyElements = [
-        "area": 1, "br": 1, "col": 1,
-        "embed": 1, "hr": 1, "img": 1,
-        "input": 1, "isindex": 1, "param": 1
+    protected validHtmlTags = [
+        "span", "div", "iframe", "p",
+        "strong", "applet", "video",
+        "noscript", "form", "button", "a",
+        "del", "dd", "fieldset",
+        "iframe", "ins", "li", "object",
+        "td", "th", "abbr", "acronym", "address", "b", "bdo",
+        "big", "caption", "cite", "code", "dfn", "dt",
+        "em", "font", "h1", "h2", "h3", "h4", "h5",
+        "h6", "i", "kbd", "label", "legend",
+        "pre", "q", "rb", "rt", "s", "samp", "small",
+        "span", "strike","sub", "sup", "tt",
+        "u", "var", "blockquote", "map"
     ] {
         get, set
     };
 
+
     /**
-     * @param string text
+     * Parses the provided text to obtain a list of htmlElements
+     * @param string html
      *
      * @return array
      */
@@ -38,6 +49,44 @@ class Parser
             let result = raw[0];
         }
         
-        return array_filter(result);
+        return result;
+    }
+
+    /**
+     * Verifies if the given string is a tag
+     * @param string text
+     *
+     * @return boolean
+     */
+    protected function isTag(string! text) -> boolean
+    {
+        return strpos(text, "<") === 0 && strpos(text, ">") === (text->length() - 1);
+    }
+
+    /**
+     * Verifies is a tag is in the whitelist of available tags
+     * @param string tag
+     *
+     * @return boolean
+     */
+    protected function isTagValid(const string! tag) -> boolean
+    {
+        return in_array(strtolower(tag), this->validHtmlTags);
+    }
+
+    /**
+     * returns the tagName
+     * @param string fullTag
+     *
+     * @return string
+     */
+    protected function filterTagName(string! fullTag) -> string
+    {
+        let fullTag = trim(str_replace(["</","<",">"], "", fullTag));
+
+        var split;
+        let split = preg_split("/\s/",fullTag);
+
+        return split[0];
     }
 }

@@ -39,8 +39,8 @@
     },
     "namespace": "htmlfilter",
     "name": "htmlfilter",
-    "description": "",
-    "author": "",
+    "description": "Extension to cleanup potentially malicious code within html allow content",
+    "author": "Ricardo Lopes",
     "version": "0.0.1",
     "verbose": false
 }
