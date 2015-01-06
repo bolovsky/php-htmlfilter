@@ -95,7 +95,7 @@ class Filter
     {
         if !this->getAllowComments() {
             let text = preg_replace(
-                "`<!(?:(?:--.*?--)|(?:\[CDATA\[.*?\]\]))>`sm",
+                "`<!(?:(?:--.*?--)|(?:\[CDATA\[.*?\]\]))>`sm",//" @fixme remove this, the syntax highlight is not working properly cause of some chars
                 "",
                 text
             );

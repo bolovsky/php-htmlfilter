@@ -1,6 +1,6 @@
 namespace Htmlfilter\Parser;
 
-class HtmlTag
+class HtmlTag extends AbstractText
 {
     /**
      * verifies that the element is an empty element
@@ -28,6 +28,10 @@ class HtmlTag
      */
     protected hasChildren = false;
 
+    /**
+     * list of the possible children of the textual representation
+     * @var array children
+     */
     protected children = [] {
         get, set
     };
@@ -49,14 +53,6 @@ class HtmlTag
     };
 
     /**
-     * Text inside the element
-     * @var string innerText
-     */
-    protected innerText = "" {
-        get, set
-    };
-
-    /**
      * Creates a new html tag object
      * @param string tag
      */
@@ -71,7 +67,7 @@ class HtmlTag
      */
     public function isEmptyElement() -> boolean
     {
-        return this->isEmptyElement;
+        return in_array(strtolower(this->tag), this->getEmptyElements());
     }
 
     /**
@@ -85,9 +81,9 @@ class HtmlTag
 
     /**
      * adds a child to the children list
-     * @param HtmlTag child
+     * @param AbstractText child
      */
-    public function addChild(<HtmlTag> child)
+    public function addChild(<AbstractText> child)
     {
         let this->children[] = child;
     }
@@ -99,5 +95,39 @@ class HtmlTag
     public function setTag(string! tag)
     {
         let this->tag = tag;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getText() -> string
+    {
+        string text = "<";
+        let text .= this->tag;
+        var tag;
+        var property;
+
+        if !empty(this->getProperties()) {
+            for property in this->getProperties() {
+                let text .= " " . property;
+            }
+        }
+
+        if this->isEmptyElement() {
+            let text .= "/>";
+            return text;
+        } else {
+            let text .= ">";
+        }
+
+        if this->hasChildren() {
+            for tag in this->children {
+                let text = text . tag->getText();
+            }
+        }
+
+        let text .= "</". this->tag .">";
+
+        return text;
     }
 }

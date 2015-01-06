@@ -13,6 +13,7 @@ class Parser
     /**
      * List of valid html tags
      * @var array validHtmlTags
+     * @todo list is incomplete, quite a few tags missing
      */
     protected validHtmlTags = [
         "span", "div", "iframe", "p",
@@ -31,6 +32,12 @@ class Parser
         get, set
     };
 
+    /**
+     * Since zephir doesn't support pass by ref yet, need this in order to reduce the tags
+     *
+     * @var array tagsSet
+     */
+    protected tagsSet = [];
 
     /**
      * Parses the provided text to obtain a list of htmlElements
@@ -43,13 +50,66 @@ class Parser
         var result = [];
         var raw = [];
 
-        preg_match_all("/<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+(?<!\s)>|(?:[^<]*)/m", html, raw);
+        preg_match_all("/<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+(?<!\s)>|(?:[^<]*)/m", html, raw);//"@fixme remove this, syntax highlight wrong
 
         if is_array(raw) && isset(raw[0]) {
-            let result = raw[0];
+            let result = this->buildResult(raw[0]);
         }
         
         return result;
+    }
+
+    protected function buildResult(array tags) -> array
+    {
+        var text;
+        let this->tagsSet = tags;
+        var tmpTags = [];
+
+        loop {
+            if empty(this->tagsSet) {
+                break;
+            }
+
+            let text = array_shift(this->tagsSet);
+
+            if this->isTag(text) {
+                var tag;
+                let tag = new \Htmlfilter\Parser\HtmlTag(this->filterTagName(text));
+                if tag->isEmptyElement() {
+                    let tmpTags[] = tag;
+                    continue;
+                }
+
+                tag->setChildren(
+                    this->buildChildren(text)
+                );
+
+                let tmpTags[] = tag;
+            } else {
+                let tmpTags[] = new \Htmlfilter\Parser\PlainText(text);
+            }
+        }
+
+        return tmpTags;
+    }
+
+    protected function buildChildren(string openTag="", array children=[]) -> array
+    {
+        var text;
+        array tmpTags = [];
+
+        for text in this->tagsSet {
+            var tag;
+            if this->isCorrespondentEndTag(text, openTag) {
+                //return
+            }
+
+            if this->isTag(text) {
+                let tag = new \Htmlfilter\Parser\HtmlTag(this->filterTagName(text));
+            }
+        }
+
+        return tmpTags;
     }
 
     /**
@@ -88,5 +148,18 @@ class Parser
         let split = preg_split("/\s/",fullTag);
 
         return split[0];
+    }
+
+    /**
+     * Check if the tag is of a correspondent value
+     *
+     * @param string tag
+     * @param string tagName
+     *
+     * @return boolean
+     */
+    protected function isCorrespondentEndTag(string! tag, string! tagName) -> boolean
+    {
+        return !empty(preg_match("/^<\/\s?" . tagName . "\s?>$/i", tag));
     }
 }
