@@ -53,14 +53,24 @@ class Parser
         preg_match_all("/<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+(?<!\s)>|(?:[^<]*)/m", html, raw);//"@fixme remove this, syntax highlight wrong
 
         if is_array(raw) && isset(raw[0]) {
-            let result = this->buildResult(raw[0]);
+            let result = this->buildResult(
+                array_filter(raw[0])
+            );
         }
         
         return result;
     }
 
+    /**
+     * Builds the base html array
+     *
+     * @param array tags
+     *
+     * @return array
+     */
     protected function buildResult(array tags) -> array
     {
+        var_dump(tags);
         var text;
         let this->tagsSet = tags;
         var tmpTags = [];
@@ -72,44 +82,82 @@ class Parser
 
             let text = array_shift(this->tagsSet);
 
-            if this->isTag(text) {
-                var tag;
-                let tag = new \Htmlfilter\Parser\HtmlTag(this->filterTagName(text));
-                if tag->isEmptyElement() {
-                    let tmpTags[] = tag;
-                    continue;
-                }
-
-                tag->setChildren(
-                    this->buildChildren(text)
-                );
-
+            var tag;
+            let tag = this->buildTag(text);
+            if tag {
                 let tmpTags[] = tag;
-            } else {
-                let tmpTags[] = new \Htmlfilter\Parser\PlainText(text);
             }
         }
 
         return tmpTags;
     }
 
-    protected function buildChildren(string openTag="", array children=[]) -> array
+    /**
+     * Recursive method to build the html children
+     *
+     * @param string openTag
+     *
+     * @return array
+     */
+    protected function buildChildren(string openTag="") -> array
     {
         var text;
-        array tmpTags = [];
+        var tmpTags = [];
 
-        for text in this->tagsSet {
-            var tag;
-            if this->isCorrespondentEndTag(text, openTag) {
-                //return
+        loop {
+            if empty(this->tagsSet) {
+                break;
             }
 
-            if this->isTag(text) {
-                let tag = new \Htmlfilter\Parser\HtmlTag(this->filterTagName(text));
+            let text = array_shift(this->tagsSet);
+
+            if this->isCorrespondentEndTag(text, openTag) {
+                return tmpTags;
+            }
+
+            var tag;
+            let tag = this->buildTag(text);
+            if tag {
+                let tmpTags[] = tag;
             }
         }
 
         return tmpTags;
+    }
+
+    /**
+     * Validates and build the html
+     *
+     * @param string tagText
+     *
+     * @return \Htmlfilter\Parser\HtmlTag
+     */
+    protected function buildTag(string! tagText)
+    {
+        if this->isTag(tagText) {
+            var tag;
+            var tagName;
+            let tagName = this->filterTagName(tagText);
+            //to ensure no issue arise, discard all invalid/unrecognized html tags
+            if !this->isTagValid(tagName) {
+                return false;
+            }
+
+            let tag = new \Htmlfilter\Parser\HtmlTag(tagName);
+
+            if tag->isEmptyElement() {
+                return tag;
+            }
+
+            tag->setChildren(
+                this->buildChildren(tag->getTag())
+            );
+
+            return tag;
+
+        } else {
+            return new \Htmlfilter\Parser\PlainText(tagText);
+        }
     }
 
     /**
@@ -142,10 +190,17 @@ class Parser
      */
     protected function filterTagName(string! fullTag) -> string
     {
-        let fullTag = trim(str_replace(["</","<",">"], "", fullTag));
+        var remove = ["/","<",">"];
+        var str;
+
+        for str in remove {
+            let fullTag = str_replace(str, "", fullTag);
+        }
+
+        let fullTag = trim(fullTag);
 
         var split;
-        let split = preg_split("/\s/",fullTag);
+        let split = preg_split("`\\s`",fullTag);
 
         return split[0];
     }
@@ -160,6 +215,6 @@ class Parser
      */
     protected function isCorrespondentEndTag(string! tag, string! tagName) -> boolean
     {
-        return !empty(preg_match("/^<\/\s?" . tagName . "\s?>$/i", tag));
+        return !empty(preg_match("/<\\/\\s?" . tagName . "\\s?>/i", tag));
     }
 }

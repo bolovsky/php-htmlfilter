@@ -23,7 +23,12 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $data
         );
 
-        var_dump($response);
+        $out = "";
+        foreach ($response as $element) {
+            $out .= $element->getText();
+        }
+
+        var_dump($out);
 
         $this->assertInternalType('array', $response);
         //$this->assetEquals($response, $output);
