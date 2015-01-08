@@ -70,7 +70,6 @@ class Parser
      */
     protected function buildResult(array tags) -> array
     {
-        var_dump(tags);
         var text;
         let this->tagsSet = tags;
         var tmpTags = [];
@@ -110,7 +109,6 @@ class Parser
             }
 
             let text = array_shift(this->tagsSet);
-
             if this->isCorrespondentEndTag(text, openTag) {
                 return tmpTags;
             }
@@ -139,7 +137,7 @@ class Parser
             var tagName;
             let tagName = this->filterTagName(tagText);
             //to ensure no issue arise, discard all invalid/unrecognized html tags
-            if !this->isTagValid(tagName) {
+            if !this->isTagValid(tagName) || this->isEndTag(tagText) {
                 return false;
             }
 
@@ -215,6 +213,18 @@ class Parser
      */
     protected function isCorrespondentEndTag(string! tag, string! tagName) -> boolean
     {
-        return !empty(preg_match("/<\\/\\s?" . tagName . "\\s?>/i", tag));
+        return !empty(preg_match("/<\\/\\s?" . tagName . "\\s?>/is", tag));
+    }
+
+    /**
+     * Verifies if is a end tag
+     *
+     * @param string tagName
+     *
+     * @return boolean
+     */
+    protected function isEndTag(string! tagName) -> boolean
+    {
+        return !empty(preg_match("/<\\/\\s?\\w*\\s?>/is", tagName));
     }
 }

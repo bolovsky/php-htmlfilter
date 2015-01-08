@@ -23,12 +23,6 @@ class HtmlTag extends AbstractText
     };
 
     /**
-     * quick check if the tag as any children
-     * @var boolean hasChildren
-     */
-    protected hasChildren = false;
-
-    /**
      * list of the possible children of the textual representation
      * @var array children
      */
@@ -76,7 +70,7 @@ class HtmlTag extends AbstractText
      */
     public function hasChildren() -> boolean
     {
-        return this->hasChildren;
+        return !empty(this->children);
     }
 
     /**
@@ -114,7 +108,7 @@ class HtmlTag extends AbstractText
         }
 
         if this->isEmptyElement() {
-            let text .= "/>";
+            let text .= " />";
             return text;
         } else {
             let text .= ">";

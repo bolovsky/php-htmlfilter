@@ -28,10 +28,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $out .= $element->getText();
         }
 
-        var_dump($out);
-
         $this->assertInternalType('array', $response);
-        //$this->assetEquals($response, $output);
+        $this->assertEquals($out, $output);
     }
 
     /**
@@ -42,19 +40,19 @@ class ParserTest extends PHPUnit_Framework_TestCase
         return array(
             'normal html, single tag' => array(
                 'valueInput' => '<span>test this</span>',
-                'outputValue' => array()
+                'outputValue' => '<span>test this</span>'
             ),
             'normal html, nested tags' => array(
                 'valueInput' => '<span>test this <strong>text</strong></span>',
-                'outputValue' => array()
+                'outputValue' => '<span>test this <strong>text</strong></span>',
             ),
             'text first, normal html, single tag' => array(
                 'valueInput' => 'this is some text<span>test this</span>',
-                'outputValue' => array()
+                'outputValue' => 'this is some text<span>test this</span>',
             ),
             'text first, malformed html, single tag' => array(
-                'valueInput' => 'this is some <text <span>test this</span>',
-                'outputValue' => array()
+                'valueInput' => 'this is some <text <spanan>test this</span>',
+                'outputValue' => 'this is some test this',
             ));
     } 
 }
