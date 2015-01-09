@@ -76,10 +76,10 @@ class Filter
      *
      * @return Htmlfilter\Parser
      */
-    protected function getParser() -> <\HtmlFilter\Parser>
+    protected function getParser() -> <\HtmlFilter\HtmlParser>
     {
         if (this->parser == null) {
-            let this->parser = new \HtmlFilter\Parser();
+            let this->parser = new \HtmlFilter\HtmlParser();
         }
 
         return this->parser;

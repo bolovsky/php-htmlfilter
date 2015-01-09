@@ -6,7 +6,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->parser = new HtmlFilter\Parser();
+        $this->parser = new HtmlFilter\HtmlParser();
     }
 
     /**

@@ -1,6 +1,6 @@
 namespace HtmlFilter;
 
-class Parser
+class HtmlParser
 {
     /**
      * Holds the passed configuration
@@ -40,7 +40,8 @@ class Parser
     protected tagsSet = [];
 
     /**
-     * Parses the provided text to obtain a list of htmlElements
+     * Parses the provided text to obtain an array of htmlElements
+     *
      * @param string html
      *
      * @return array
