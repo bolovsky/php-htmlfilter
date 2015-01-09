@@ -34,6 +34,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     /**
      * Html Data Provider
+     *
+     * @return array
      */
     public function getDataHtmlProvider()
     {
@@ -57,7 +59,15 @@ class ParserTest extends PHPUnit_Framework_TestCase
             'some nesting' => array(
                 'valueInput' => '<div><input><span>test this</span></div>',
                 'outputValue' => '<div><input /><span>test this</span></div>',
-            )
+            ),
+            'normal html, single tag, single attribute' => array(
+                'valueInput' => '<span class="test">test this</span>',
+                'outputValue' => '<span class="test">test this</span>',
+            ),
+            'normal html, single tag, double attribute' => array(
+                'valueInput' => '<span class="test" style="float: right;">test this</span>',
+                'outputValue' => '<span class="test" style="float: right;">test this</span>',
+            ),
         );
     } 
 }

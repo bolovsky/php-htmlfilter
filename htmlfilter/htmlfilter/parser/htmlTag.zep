@@ -42,7 +42,7 @@ class HtmlTag extends AbstractText
      * Properties pertaining this specific element
      * @var array properties
      */
-    protected properties = [] {
+    protected attributes = [] {
         get, set
     };
 
@@ -99,11 +99,11 @@ class HtmlTag extends AbstractText
         string text = "<";
         let text .= this->tag;
         var tag;
-        var property;
+        var attribute;
 
-        if !empty(this->getProperties()) {
-            for property in this->getProperties() {
-                let text .= " " . property;
+        if !empty(this->getAttributes()) {
+            for attribute in this->getAttributes() {
+                let text .= " " . attribute;
             }
         }
 

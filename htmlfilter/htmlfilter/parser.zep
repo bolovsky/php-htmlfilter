@@ -111,6 +111,10 @@ class Parser
 
             let tag = new \HtmlFilter\Parser\HtmlTag(tagName);
 
+            tag->setAttributes(
+                this->buildAttributes(tag->getTag(), tagText)
+            );
+
             if tag->isEmptyElement() {
                 return tag;
             }
@@ -156,6 +160,28 @@ class Parser
         }
 
         return tmpTags;
+    }
+
+    /**
+     * Builds the attributes for the htmlTag from the text directly
+     *
+     * @param string tagName
+     * @param string fullTagWithAttributes
+     *
+     * @return array
+     */
+    protected function buildAttributes(string! tagName, string! fullTagWithAttributes) -> array
+    {
+        var attributes = [];
+        var tmp = [];
+        preg_match_all("/<\\s?" . tagName . " \\s?(.*)\\s?\\/?>/mi", fullTagWithAttributes, tmp);
+
+        if !empty(tmp) && count(tmp[1]) > 0 {
+            preg_match_all("/((([^=]+)=((?:\"|'))([^\"']+)\\4) ?)/m",tmp[1][0], tmp);
+            let attributes = tmp[2];
+        }
+
+        return attributes;
     }
 
     /**
