@@ -1,4 +1,4 @@
-namespace Htmlfilter;
+namespace HtmlFilter;
 
 /**
  * filters HTML according to the set of provided rules
@@ -76,10 +76,10 @@ class Filter
      *
      * @return Htmlfilter\Parser
      */
-    protected function getParser() -> <\Htmlfilter\Parser>
+    protected function getParser() -> <\HtmlFilter\Parser>
     {
         if (this->parser == null) {
-            let this->parser = new \Htmlfilter\Parser();
+            let this->parser = new \HtmlFilter\Parser();
         }
 
         return this->parser;

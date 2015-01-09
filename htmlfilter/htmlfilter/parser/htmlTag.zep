@@ -1,4 +1,4 @@
-namespace Htmlfilter\Parser;
+namespace HtmlFilter\Parser;
 
 class HtmlTag extends AbstractText
 {
@@ -115,8 +115,8 @@ class HtmlTag extends AbstractText
         }
 
         if this->hasChildren() {
-            for tag in this->children {
-                let text = text . tag->getText();
+            for tag in this->getChildren() {
+                let text .= tag->getText();
             }
         }
 

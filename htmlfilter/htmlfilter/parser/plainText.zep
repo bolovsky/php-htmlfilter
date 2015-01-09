@@ -1,4 +1,4 @@
-namespace Htmlfilter\Parser;
+namespace HtmlFilter\Parser;
 
 class PlainText extends AbstractText
 {

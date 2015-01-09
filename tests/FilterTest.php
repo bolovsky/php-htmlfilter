@@ -7,7 +7,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->filter = new Htmlfilter\Filter();
+        $this->filter = new HtmlFilter\Filter();
     }
 
     /**

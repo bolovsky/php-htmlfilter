@@ -1,4 +1,4 @@
-namespace Htmlfilter;
+namespace HtmlFilter;
 
 class Parser
 {
@@ -27,7 +27,7 @@ class Parser
         "h6", "i", "kbd", "label", "legend",
         "pre", "q", "rb", "rt", "s", "samp", "small",
         "span", "strike","sub", "sup", "tt",
-        "u", "var", "blockquote", "map"
+        "u", "var", "blockquote", "map", "input"
     ] {
         get, set
     };
@@ -92,6 +92,41 @@ class Parser
     }
 
     /**
+     * Validates and build the html
+     *
+     * @param string tagText
+     *
+     * @return \Htmlfilter\Parser\HtmlTag
+     */
+    protected function buildTag(string! tagText)
+    {
+        if this->isTag(tagText) {
+            var tag;
+            var tagName;
+            let tagName = this->filterTagName(tagText);
+            //to ensure no issue arise, discard all invalid/unrecognized html tags
+            if !this->isTagValid(tagName) || this->isEndTag(tagText) {
+                return false;
+            }
+
+            let tag = new \HtmlFilter\Parser\HtmlTag(tagName);
+
+            if tag->isEmptyElement() {
+                return tag;
+            }
+
+            tag->setChildren(
+                this->buildChildren(tag->getTag())
+            );
+
+            return tag;
+
+        } else {
+            return new \HtmlFilter\Parser\PlainText(tagText);
+        }
+    }
+
+    /**
      * Recursive method to build the html children
      *
      * @param string openTag
@@ -121,41 +156,6 @@ class Parser
         }
 
         return tmpTags;
-    }
-
-    /**
-     * Validates and build the html
-     *
-     * @param string tagText
-     *
-     * @return \Htmlfilter\Parser\HtmlTag
-     */
-    protected function buildTag(string! tagText)
-    {
-        if this->isTag(tagText) {
-            var tag;
-            var tagName;
-            let tagName = this->filterTagName(tagText);
-            //to ensure no issue arise, discard all invalid/unrecognized html tags
-            if !this->isTagValid(tagName) || this->isEndTag(tagText) {
-                return false;
-            }
-
-            let tag = new \Htmlfilter\Parser\HtmlTag(tagName);
-
-            if tag->isEmptyElement() {
-                return tag;
-            }
-
-            tag->setChildren(
-                this->buildChildren(tag->getTag())
-            );
-
-            return tag;
-
-        } else {
-            return new \Htmlfilter\Parser\PlainText(tagText);
-        }
     }
 
     /**

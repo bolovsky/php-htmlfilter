@@ -6,21 +6,21 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->parser = new Htmlfilter\Parser();
+        $this->parser = new HtmlFilter\Parser();
     }
 
     /**
      * Tests the parser return
      *
-     * @param mixed $data
-     * @param mixed $output
+     * @param mixed $valueInput
+     * @param mixed $outputValue
      * 
      * @dataProvider getDataHtmlProvider
      */
-    public function testParserBaseReturn($data, $output)
+    public function testParserBaseReturn($valueInput, $outputValue)
     {
         $response = $this->parser->parse(
-            $data
+            $valueInput
         );
 
         $out = "";
@@ -29,7 +29,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertInternalType('array', $response);
-        $this->assertEquals($out, $output);
+        $this->assertEquals($outputValue,$out);
     }
 
     /**
@@ -53,6 +53,11 @@ class ParserTest extends PHPUnit_Framework_TestCase
             'text first, malformed html, single tag' => array(
                 'valueInput' => 'this is some <text <spanan>test this</span>',
                 'outputValue' => 'this is some test this',
-            ));
+            ),
+            'some nesting' => array(
+                'valueInput' => '<div><input><span>test this</span></div>',
+                'outputValue' => '<div><input /><span>test this</span></div>',
+            )
+        );
     } 
 }
