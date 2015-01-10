@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Class ParserTest
+ */
 class ParserTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \HtmlFilter\HtmlParser
+     */
     protected $parser;
 
+    /**
+     * @{@inheritdoc}
+     */
     public function setUp()
     {
         $this->parser = new HtmlFilter\HtmlParser();

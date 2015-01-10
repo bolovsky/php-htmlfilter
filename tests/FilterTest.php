@@ -1,10 +1,18 @@
 <?php
 
+/**
+ * Class FilterTest
+ */
 class FilterTest extends PHPUnit_Framework_TestCase
 {
-
+    /**
+     * @var \HtmlFilter\Filter
+     */
     protected $filter;
 
+    /**
+     * @{@inheritdoc}
+     */
     public function setUp()
     {
         $this->filter = new HtmlFilter\Filter();

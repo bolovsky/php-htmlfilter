@@ -1,5 +1,8 @@
 namespace HtmlFilter\Parser;
 
+/**
+ * Interface TextInterface
+ */
 interface TextInterface
 {
     /**

@@ -38,12 +38,22 @@ class Filter
         get
     };
 
+    /**
+     * @var <HtmlFilter\HtmlParser>
+     */
     protected parser;
 
+    /**
+     * @var boolean allowComments
+     */
     protected allowComments = false {
         get, set
     };
 
+    /**
+     * @param array config
+     * @param boolean allowComments
+     */
     public function __construct(array config=[], boolean! allowComments=false)
     {
         let this->allowComments = allowComments;
@@ -64,7 +74,7 @@ class Filter
     }
 
     /**
-     *
+     * Clears the malicious code from html tags
      */
     protected function cleanTags()
     {

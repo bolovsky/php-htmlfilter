@@ -1,5 +1,8 @@
 namespace HtmlFilter;
 
+/**
+ * Class HtmlParser
+ */
 class HtmlParser
 {
     /**

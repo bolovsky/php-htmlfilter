@@ -1,5 +1,8 @@
 namespace HtmlFilter\Parser;
 
+/**
+ * Class HtmlTag
+ */
 class HtmlTag extends AbstractText
 {
     /**
