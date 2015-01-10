@@ -51,6 +51,36 @@ class Filter
     };
 
     /**
+     * @var array elementBlacklist
+     */
+    protected elementPermissionList = [
+        "span": 1, "div": 1, "iframe": 1, "p": 1,
+        "strong": 1, "applet": 0, "video": 1, "small": 1,
+        "noscript": 1, "form": 1, "button": 1, "a": 1, "dt": 1,
+        "del": 1, "dd": 1, "fieldset": 1, "script": 0, "em": 1,
+        "ins": 1, "li": 1, "object": 1, "b": 1, "bdo": 1,
+        "td": 1, "th": 1, "abbr": 1, "acronym": 1, "address": 1,
+        "big": 1, "caption": 1, "cite": 1, "code": 1, "dfn": 1,
+        "font": 1, "h1: 1", "h2": 1, "h3": 1, "h4": 1, "h5": 1,
+        "h6": 1, "i": 1, "kbd": 1, "label": 1, "legend": 1,
+        "pre": 1, "q": 1, "rb": 1, "rt": 1, "s": 1, "samp": 1,
+        "span": 1, "strike": 1,"sub": 1, "sup": 1, "tt": 1,
+        "u": 1, "var": 1, "blockquote": 1, "map": 1, "input": 1
+    ] {
+        get, set
+    };
+
+    /**
+     * @var array attributeBlacklist
+     */
+    protected attributePermissionList = [
+        "class": 1, "name": 1, "id": 0, "style": 1,
+        "onfocus": 0, "onblur": 0, "onclick": 0, "onsubmit": 0
+    ] {
+        get, set
+    };
+
+    /**
      * @param array config
      * @param boolean allowComments
      */
@@ -65,20 +95,82 @@ class Filter
      * @param string str
      * @return string
      */
-    public function filterHtml(string! text) -> string
+    public function filterHtml(string! htmlString) -> string
     {
-        let text = this->clearComments(text);
-        let text = this->clearOddChars(text);
+        let htmlString = this->clearComments(htmlString);
+        let htmlString = this->clearOddChars(htmlString);
 
-        return text;
+        var parsedHtml;
+        let parsedHtml = this->getParser()->parse(htmlString);
+        let parsedHtml = this->cleanTags(parsedHtml);
+
+        var cleanHtmlString = "";
+        var tag;
+        for tag in parsedHtml {
+            let cleanHtmlString .= tag->getText();
+        }
+
+        return cleanHtmlString;
     }
 
     /**
      * Clears the malicious code from html tags
+     *
+     * @param array parsedHtml
+     *
+     * @return array
      */
-    protected function cleanTags()
+    protected function cleanTags(parsedHtml) -> array
     {
+        if empty(parsedHtml) {
+            return parsedHtml;
+        }
 
+        var tag;
+        var cleanedHtmlTags = [];
+
+        for tag in parsedHtml {
+            if tag instanceof \HtmlFilter\HtmlParser\HtmlTag {
+                if !this->isHtmlElementAllowed(tag->getTag()) {
+                    continue;
+                }
+
+                var cleanAttributes = [];
+                var attribute;
+                for attribute in tag->getAttributes() {
+                    if this->isHtmlElementAttributeAllowed(attribute) {
+                        let cleanAttributes[] = attribute;
+                    }
+                }
+
+                if tag->hasChildren() {
+                    tag->setChildren(
+                        this->cleanTags(
+                            tag->getChildren()
+                        )
+                    );
+                }
+
+                tag->setAttributes(
+                    cleanAttributes
+                );
+            }
+
+            let cleanedHtmlTags[] = tag;
+        }
+
+        return cleanedHtmlTags;
+    }
+
+    /**
+     * Removes bad attributes and cleans the remaining ones
+     *
+     * @param array parsedAttributes
+     * @return array
+     */
+    protected function cleanAttributes(array parsedAttributes)
+    {
+        return parsedAttributes;
     }
 
     /**
@@ -158,5 +250,37 @@ class Filter
         }
 
         return text;
+    }
+
+    /**
+     * Verifies that the html element exists and
+     * is allowed in the elementPermissionList
+     *
+     * @param string tag
+     */
+    public function isHtmlElementAllowed(string! tagName) -> boolean
+    {
+        let tagName = strtolower(tagName);
+        return (isset(this->elementPermissionList[tagName])
+                && this->elementPermissionList[tagName] === 1);
+    }
+
+    /**
+     * Verifies that the html attribute exists and
+     * is allowed in the attributePermissionList
+     *
+     * @param string attribute
+     */
+    public function isHtmlElementAttributeAllowed(string! attribute) -> boolean
+    {
+        let attribute = strtolower(attribute);
+
+        var splitAttribute = [];
+        let splitAttribute = explode("=", attribute);
+
+        let attribute = trim(splitAttribute[0]);
+
+        return (isset(this->attributePermissionList[attribute])
+                && this->attributePermissionList[attribute] === 1);
     }
 }

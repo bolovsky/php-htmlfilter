@@ -86,7 +86,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             ),
             'text first, malformed html, single tag' => array(
                 'valueInput' => 'this is some <text <spanan>test this</span>',
-                'outputValue' => 'this is some test this',
+                'outputValue' => 'this is some ',
             ),
             'some nesting' => array(
                 'valueInput' => '<div><input><span>test this</span></div>',
@@ -106,7 +106,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             ),
             'normal html, nested tags and invalid elements, several attributes attribute' => array(
                 'valueInput' => '<div class="outerDiv"><invalidTag><input type="text" name="mightyInput" /></invalidTag><span class="test" style="float: right;">test this</span></div>',
-                'outputValue' => '<div class="outerDiv"><input type="text" name="mightyInput" /><span class="test" style="float: right;">test this</span></div>',
+                'outputValue' => '<div class="outerDiv"><span class="test" style="float: right;">test this</span></div>',
             ),
         );
     }

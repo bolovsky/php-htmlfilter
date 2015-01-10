@@ -44,6 +44,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
     /**
      * Data for a full scope test on Filter
      *
+     * @return array
      */
     public function getFilteringData()
     {

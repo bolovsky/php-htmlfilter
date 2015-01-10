@@ -29,7 +29,7 @@ class HtmlParser
         "em", "font", "h1", "h2", "h3", "h4", "h5",
         "h6", "i", "kbd", "label", "legend",
         "pre", "q", "rb", "rt", "s", "samp", "small",
-        "span", "strike","sub", "sup", "tt",
+        "span", "strike","sub", "sup", "tt", "script",
         "u", "var", "blockquote", "map", "input"
     ] {
         get, set
@@ -108,8 +108,9 @@ class HtmlParser
             var tag;
             var tagName;
             let tagName = this->filterTagName(tagText);
-            //to ensure no issue arise, discard all invalid/unrecognized html tags
-            if !this->isTagValid(tagName) || this->isEndTag(tagText) {
+
+            //if an end tag gets here, it doesn't have a open tag and must be discarted
+            if this->isEndTag(tagText) {
                 return false;
             }
 
@@ -126,6 +127,12 @@ class HtmlParser
             tag->setChildren(
                 this->buildChildren(tag->getTag())
             );
+
+            //to ensure no issue arise, discard all invalid/unrecognized html tags
+            //this must be made at the end of parsing, to remove all inner elements
+            if !this->isTagValid(tagName) {
+                return false;
+            }
 
             return tag;
 
