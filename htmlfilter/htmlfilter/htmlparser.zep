@@ -100,7 +100,7 @@ class HtmlParser
      *
      * @param string tagText
      *
-     * @return \Htmlfilter\Parser\HtmlTag
+     * @return \\HtmlFilter\HtmlParser\HtmlTag\HtmlTag
      */
     protected function buildTag(string! tagText)
     {
@@ -113,7 +113,7 @@ class HtmlParser
                 return false;
             }
 
-            let tag = new \HtmlFilter\Parser\HtmlTag(tagName);
+            let tag = new \HtmlFilter\HtmlParser\HtmlTag(tagName);
 
             tag->setAttributes(
                 this->buildAttributes(tag->getTag(), tagText)
@@ -130,7 +130,7 @@ class HtmlParser
             return tag;
 
         } else {
-            return new \HtmlFilter\Parser\PlainText(tagText);
+            return new \HtmlFilter\HtmlParser\PlainText(tagText);
         }
     }
 

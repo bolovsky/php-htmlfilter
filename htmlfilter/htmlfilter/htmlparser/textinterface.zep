@@ -1,4 +1,4 @@
-namespace HtmlFilter\Parser;
+namespace HtmlFilter\HtmlParser;
 
 /**
  * Interface TextInterface

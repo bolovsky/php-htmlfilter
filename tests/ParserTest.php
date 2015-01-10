@@ -8,18 +8,19 @@ class ParserTest extends PHPUnit_Framework_TestCase
     /**
      * @var \HtmlFilter\HtmlParser
      */
-    protected $parser;
+    protected $htmlParser;
 
     /**
      * @{@inheritdoc}
      */
     public function setUp()
     {
-        $this->parser = new HtmlFilter\HtmlParser();
+        $this->htmlParser = new HtmlFilter\HtmlParser();
     }
 
     /**
-     * Tests the parser return
+     * Tests the htmlparser base return to check if
+     * there was scrambling while reassembling the html together
      *
      * @param mixed $valueInput
      * @param mixed $outputValue
@@ -28,17 +29,39 @@ class ParserTest extends PHPUnit_Framework_TestCase
      */
     public function testParserBaseReturn($valueInput, $outputValue)
     {
-        $response = $this->parser->parse(
+        $htmlArray = $this->htmlParser->parse(
             $valueInput
         );
 
         $out = "";
-        foreach ($response as $element) {
+        foreach ($htmlArray as $element) {
             $out .= $element->getText();
         }
 
-        $this->assertInternalType('array', $response);
+        $this->assertInternalType('array', $htmlArray);
         $this->assertEquals($outputValue,$out);
+    }
+
+    /**
+     * Checks if attributes are properly "harvested"
+     *
+     * @param mixed $valueInput
+     * @param mixed $outputValue
+     *
+     * @dataProvider getSampleHtmlValidTagsWithAttributes
+     */
+    public function testGetAttributesProperly($valueInput, $outputValue)
+    {
+        $htmlArray = $this->htmlParser->parse(
+            $valueInput
+        );
+
+        foreach ($htmlArray as $key => $element) {
+            if ($element instanceof \HtmlFilter\HtmlParser\HtmlTag) {
+                $this->assertInternalType('array', $element->getAttributes());
+                $this->assertEquals($outputValue[$key], $element->getAttributes());
+            }
+        }
     }
 
     /**
@@ -77,6 +100,45 @@ class ParserTest extends PHPUnit_Framework_TestCase
                 'valueInput' => '<span class="test" style="float: right;">test this</span>',
                 'outputValue' => '<span class="test" style="float: right;">test this</span>',
             ),
+            'normal html, nested tags, several attributes attribute' => array(
+                'valueInput' => '<div class="outerDiv"><input type="text" name="mightyInput" /><span class="test" style="float: right;">test this</span></div>',
+                'outputValue' => '<div class="outerDiv"><input type="text" name="mightyInput" /><span class="test" style="float: right;">test this</span></div>',
+            ),
+            'normal html, nested tags and invalid elements, several attributes attribute' => array(
+                'valueInput' => '<div class="outerDiv"><invalidTag><input type="text" name="mightyInput" /></invalidTag><span class="test" style="float: right;">test this</span></div>',
+                'outputValue' => '<div class="outerDiv"><input type="text" name="mightyInput" /><span class="test" style="float: right;">test this</span></div>',
+            ),
         );
-    } 
+    }
+
+    /**
+     * Html with attributes provider
+     *
+     * @return array
+     */
+    public function getSampleHtmlValidTagsWithAttributes()
+    {
+        return array(
+            'normal html, single tag, single attribute' => array(
+                'valueInput' => '<span class="test">test this</span>',
+                'outputValue' => array(
+                    array('class="test"')
+                ),
+            ),
+            'normal html, single tag, double attribute' => array(
+                'valueInput' => '<span class="test" style="float: right;">test this</span>',
+                'outputValue' => array(
+                    array('class="test"', 'style="float: right;"')
+                ),
+            ),
+            'normal html, nested tags, several attributes attribute' => array(
+                'valueInput' => '<div class="outerDiv"><input type="text" name="mightyInput" /><span class="test" style="float: right;">test this</span></div>',
+                'outputValue' => array(
+                    array('class="outerDiv"'),
+                    array('type="text"', 'name="mightyInput"'),
+                    array('class="test"', 'style="float: right;"'),
+                ),
+            ),
+        );
+    }
 }

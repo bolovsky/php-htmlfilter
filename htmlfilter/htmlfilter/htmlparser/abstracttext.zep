@@ -1,4 +1,4 @@
-namespace Htmlfilter\Parser;
+namespace HtmlFilter\HtmlParser;
 
 /**
  * Class AbstractText
