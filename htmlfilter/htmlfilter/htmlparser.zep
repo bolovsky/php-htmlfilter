@@ -264,4 +264,16 @@ class HtmlParser
     {
         return !empty(preg_match("/<\\/\\s?\\w*\\s?>/is", tagName));
     }
+
+    /**
+     * Adds a new html tag to the parser available tags
+     *
+     * @param string tagName
+     */
+    public function addHtmlTagAsValid(string! tagName)
+    {
+        if !in_array(tagName, this->validHtmlTags) {
+            let this->validHtmlTags[] = tagName;
+        }
+    }
 }

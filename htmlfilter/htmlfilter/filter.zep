@@ -88,6 +88,10 @@ class Filter
     {
         let this->allowComments = allowComments;
         let this->config = config;
+
+        if isset(this->config["configureElements"]) {
+            this->configureElements(this->config["configureElements"]);
+        }
     }
 
     /**
@@ -282,5 +286,55 @@ class Filter
 
         return (isset(this->attributePermissionList[attribute])
                 && this->attributePermissionList[attribute] === 1);
+    }
+
+    /**
+     * Receives an configuration array for html elements
+     * Elements that do not exist will be created.
+     * If permission is not set, defaults to activate.
+     *
+     * @param array elements
+     *
+     * @return boolean
+     *
+     * @example
+     * [
+     *    ["name" => "script", "permission" => 0],
+     *    ["name" => "aside", "permission" => 1]
+     * ]
+     *
+     */
+    public function configureElements(elements) -> boolean
+    {
+        if empty(elements) || !is_array(elements) {
+            return false;
+        }
+
+        var element;
+        for element in elements {
+            if (!isset(element["name"])) {
+                continue;
+            }
+
+            this->changePermissionOfHtmlElement(
+                element["name"],
+                isset(element["permission"]) ? element["permission"] : 1
+            );
+
+            this->getParser()->addHtmlTagAsValid(element["name"]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Alters the permission for a certain html element.
+     *
+     * @param string elementName
+     * @param int permission
+     */
+    public function changePermissionOfHtmlElement(string! elementName, int! permission=1)
+    {
+        let this->elementPermissionList[elementName] = permission;
     }
 }
