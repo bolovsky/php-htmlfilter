@@ -116,7 +116,7 @@ class Filter
     public function filterHtml(string! htmlString) -> string
     {
         let htmlString = this->clearComments(htmlString);
-        let htmlString = this->clearOddChars(htmlString);
+        let htmlString = this->clearMSChars(htmlString);
 
         var parsedHtml;
         let parsedHtml = this->getParser()->parse(htmlString);
@@ -225,12 +225,12 @@ class Filter
     }
 
     /**
-     * Removes Odd chars, usually created by ms-word
+     * Removes Odd chars, usually created by ms-word/excel..
      *
      * @param string text
      * @return string
      */
-    protected function clearOddChars(string! text)
+    protected function clearMSChars(string! text)
     {
         let text = preg_replace("`[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]`", "", text);
 
