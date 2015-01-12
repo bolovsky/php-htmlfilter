@@ -40,3 +40,28 @@ $cleanHtml = $filter->filterHtml($dirtyHtml);
 //this should produce: '<span>this should have nothing more</span>'
 echo "<pre>$cleanHtml</pre>"; 
 ```
+
+To configure the filter you may pass a new config parameter into filter:
+```php
+//disable all usage of <script>, and enables <aside>
+$config = array(
+    'configureElements' => array(
+        array('name'=>'script', 'permission' => 0),
+        array('name'=>'aside', 'permission' => 1),
+    )
+);
+
+$filter = new HtmlFilter\Filter($config);
+```
+
+Or you may simply pass them into configureElements method:
+```php
+$filter = new HtmlFilter\Filter();
+
+$elementConfiguration = array(
+    array('name'=>'script', 'permission' => 0),
+    array('name'=>'aside', 'permission' => 1),
+);
+
+$filter->configureElements($elementConfiguration);
+```
