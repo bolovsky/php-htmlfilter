@@ -35,10 +35,34 @@ class FilterTest extends PHPUnit_Framework_TestCase
      * @param array $possibleOutputs
      * @param array $configuration
      *
-     * @dataProvider getDataForConfig
+     * @dataProvider getDataForElementConfig
      */
-    public function testFilterConfigurationForHtmlElements($input, $possibleOutputs, $configuration)
-    {
+    public function testFilterConfigurationForHtmlElements(
+        $input,
+        $possibleOutputs,
+        $configuration
+    ) {
+        $filter = new HtmlFilter\Filter();
+        $result = $filter->filterHtml($input);
+        $this->assertEquals($possibleOutputs['previousToConfig'], $result);
+
+        $filter = new HtmlFilter\Filter($configuration);
+        $result = $filter->filterHtml($input);
+        $this->assertEquals($possibleOutputs['afterConfig'], $result);
+    }
+
+    /**
+     * @param string $input
+     * @param array $possibleOutputs
+     * @param array $configuration
+     *
+     * @dataProvider getDataForAttributeConfig
+     */
+    public function testFilterConfigurationForElementAttributes(
+        $input,
+        $possibleOutputs,
+        $configuration
+    ) {
         $filter = new HtmlFilter\Filter();
         $result = $filter->filterHtml($input);
         $this->assertEquals($possibleOutputs['previousToConfig'], $result);
@@ -67,14 +91,22 @@ class FilterTest extends PHPUnit_Framework_TestCase
             'filter values with xml nesting' => array(
                 'valueInput' => 'New product<xml><test>test is this tags will be striped</test></xml>',
                 'outputValue' => 'New product'
-            )
+            ),
+            'normal html, single tag, double attribute' => array(
+                'valueInput' => '<span class="test" style="float: right;">test this</span>',
+                'outputValue' => '<span class="test" style="float: right;">test this</span>',
+            ),
+            'normal html, single tag, double attribute, one is invalid' => array(
+                'valueInput' => '<span class="test" onfocus="alert(1);">test this</span>',
+                'outputValue' => '<span class="test">test this</span>',
+            ),
         );
     }
 
     /**
      * @return array
      */
-    public function getDataForConfig()
+    public function getDataForElementConfig()
     {
         return array(
             'add new html tag, test previous and after' => array(
@@ -98,6 +130,39 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 'configuration' => array(
                     'configureElements' => array(
                         array('name'=>'span', 'permission' => 0)
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataForAttributeConfig()
+    {
+        return array(
+            'add new html element attribute, test previous and after' => array(
+                'input' => '<span novalidattribute="should-be-visible-after" onfocus="butThisShouldNot();">this should always be visible</span>',
+                'output' => array(
+                    'previousToConfig' => '<span>this should always be visible</span>',
+                    'afterConfig' => '<span novalidattribute="should-be-visible-after">this should always be visible</span>'
+                ),
+                'configuration' => array(
+                    'configureAttributes' => array(
+                        array('name'=>'novalidattribute', 'permission' => 1)
+                    )
+                )
+            ),
+            'disallow html element attribute, test previous and after' => array(
+                'input' => '<span class="this-should-disappear">this should only be visible befor config</span>',
+                'output' => array(
+                    'previousToConfig' => '<span class="this-should-disappear">this should only be visible befor config</span>',
+                    'afterConfig' => '<span>this should only be visible befor config</span>'
+                ),
+                'configuration' => array(
+                    'configureAttributes' => array(
+                        array('name'=>'class', 'permission' => 0)
                     )
                 )
             )

@@ -103,6 +103,10 @@ class Filter
             this->configureElements(config["configureElements"]);
         }
 
+        if isset(config["configureAttributes"]) {
+            this->configureAttributes(config["configureAttributes"]);
+        }
+
         if isset(config["cleanMSCharacters"]) {
             this->setCleanMSCharacters(config["cleanMSCharacters"]);
         }
@@ -303,9 +307,9 @@ class Filter
      * ]
      *
      */
-    public function configureElements(elements) -> boolean
+    public function configureElements(array elements) -> boolean
     {
-        if empty(elements) || !is_array(elements) {
+        if count(elements) == 0 {
             return false;
         }
 
@@ -314,6 +318,8 @@ class Filter
             if (!isset(element["name"])) {
                 continue;
             }
+
+            let element["name"] = strtolower(element["name"]);
 
             this->changePermissionOfHtmlElement(
                 element["name"],
@@ -332,8 +338,44 @@ class Filter
      * @param string elementName
      * @param int permission
      */
-    public function changePermissionOfHtmlElement(string! elementName, int! permission=1)
+    protected function changePermissionOfHtmlElement(string! elementName, int! permission=1)
     {
         let this->elementPermissionList[elementName] = permission;
+    }
+
+    /**
+     * Receives an configuration array for html element attributes
+     * Attributes that do not exist will be created.
+     * If permission is not set, defaults to activate.
+     *
+     * @param array elements
+     *
+     * @return boolean
+     *
+     * @example
+     * [
+     *    ["name" => "src", "permission" => 1],
+     *    ["name" => "onfocus", "permission" => 0]
+     * ]
+     */
+    public function configureAttributes(array attributes) -> boolean
+    {
+        if count(attributes) == 0 {
+            return false;
+        }
+
+        var attribute;
+        for attribute in attributes {
+            if (!isset(attribute["name"])) {
+                continue;
+            }
+
+            let attribute["name"] = strtolower(attribute["name"]);
+
+            let this->attributePermissionList[attribute["name"]] =
+                isset(attribute["permission"]) ? attribute["permission"] : 1;
+        }
+
+        return true;
     }
 }
