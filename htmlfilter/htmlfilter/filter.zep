@@ -7,14 +7,6 @@ namespace HtmlFilter;
 class Filter
 {
     /**
-     * Holds the passed configuration
-     * @var array config
-     */
-    protected config = [] {
-        set, get
-    };
-
-    /**
      * List of valid html elements
      * @var array htmlElements
      */
@@ -51,6 +43,13 @@ class Filter
     };
 
     /**
+     * @var boolean cleanMSCharacters
+     */
+    protected cleanMSCharacters = false {
+       get, set
+    };
+
+    /**
      * @var array elementBlacklist
      */
     protected elementPermissionList = [
@@ -84,13 +83,28 @@ class Filter
      * @param array config
      * @param boolean allowComments
      */
-    public function __construct(array config=[], boolean! allowComments=false)
+    public function __construct(array config=[])
     {
-        let this->allowComments = allowComments;
-        let this->config = config;
+        this->handleConfig(config);
+    }
 
-        if isset(this->config["configureElements"]) {
-            this->configureElements(this->config["configureElements"]);
+    /**
+     * Manages filter initial configuration
+     *
+     * @param array config
+     */
+    protected function handleConfig(array config)
+    {
+        if isset(config["allowComments"]) {
+            this->setAllowComments(config["allowComments"]);
+        }
+
+        if isset(config["configureElements"]) {
+            this->configureElements(config["configureElements"]);
+        }
+
+        if isset(config["cleanMSCharacters"]) {
+            this->setCleanMSCharacters(config["cleanMSCharacters"]);
         }
     }
 
@@ -220,7 +234,7 @@ class Filter
     {
         let text = preg_replace("`[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]`", "", text);
 
-        if isset(this->config["clean_ms_char"]) {
+        if this->cleanMSCharacters {
             var exclude = [
                 "\x7f" : "", "\x80" : "&#8364;", "\x81" : "", 
                 "\x83" : "&#402;", "\x85" : "&#8230;", "\x86" : "&#8224;",
@@ -229,26 +243,11 @@ class Filter
                 "\x8d" : "", "\x8e" : "&#381;", "\x8f" : "", "\x90" : "", 
                 "\x95" : "&#8226;", "\x96" : "&#8211;", "\x97" : "&#8212;", 
                 "\x98" : "&#732;", "\x99" : "&#8482;", "\x9a" : "&#353;", 
-                "\x9b" : "&#8250;", "\x9c" : "&#339;", "\x9d" : "", 
-                "\x9e" : "&#382;", "\x9f" : "&#376;"
+                "\x9b" : "&#8250;", "\x9c" : "&#339;", "\x9d" : "",
+                "\x9e" : "&#382;", "\x9f" : "&#376;","\x82" : "&#8218;",
+                "\x92" : "&#8217;", "\x93" : "&#8220;", "\x94" : "&#8221;",
+                "\x84" : "&#8222;", "\x91" : "&#8216;"
             ];
-
-            var key;
-            var value;
-
-            if this->config["clean_ms_char"] == 1 {
-                for key, value in [
-                    "\x82" : "&#8218;", "\x84" : "&#8222;", "\x91" : "&#8216;", 
-                    "\x92" : "&#8217;", "\x93" : "&#8220;", "\x94" : "&#8221;"
-                ] {
-                    let exclude[key] = value;
-                }
-            } else {
-                for key, value in ["\x82" : "'", "\x84" : "\"", "\x91" : "'", "\x92" : "'", "\x93" : "\"", "\x94" : "\""]
-                {
-                    let exclude[key] = value;
-                }
-            }
             
             let text = strtr(text, exclude);
         }
