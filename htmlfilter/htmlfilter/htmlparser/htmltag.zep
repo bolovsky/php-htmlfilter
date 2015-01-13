@@ -6,22 +6,9 @@ namespace HtmlFilter\HtmlParser;
 class HtmlTag extends AbstractText
 {
     /**
-     * verifies that the element is an empty element
-     * @var boolean isEmptyElement
+     * @var <\HtmlFilter\HtmlParser\Model\HtmlElement>
      */
-    protected isEmptyElement = false {
-        set
-    };
-
-    /**
-     * Holds the html elements that are considered empty
-     * @var array emptyElements
-     */
-    protected emptyElements = [
-        "area", "br", "col",
-        "embed", "hr", "img",
-        "input", "isindex", "param"
-    ] {
+    protected htmlElement {
         get, set
     };
 
@@ -52,19 +39,12 @@ class HtmlTag extends AbstractText
     /**
      * Creates a new html tag object
      * @param string tag
+     * @param HtmlFilter\HtmlParser\Model\HtmlElement htmlElement
      */
-    public function __construct(string! tag)
+    public function __construct(string! tag, htmlElement=null)
     {
         let this->tag = tag;
-    }
-
-    /**
-     * asserts if the element as close tag
-     * @return boolean
-     */
-    public function isEmptyElement() -> boolean
-    {
-        return in_array(strtolower(this->tag), this->getEmptyElements());
+        let this->htmlElement = htmlElement;
     }
 
     /**
@@ -110,7 +90,7 @@ class HtmlTag extends AbstractText
             }
         }
 
-        if this->isEmptyElement() {
+        if this->getHtmlElement()->isEmptyElement(this->tag) {
             let text .= " />";
             return text;
         } else {

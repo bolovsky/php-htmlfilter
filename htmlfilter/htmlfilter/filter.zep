@@ -7,14 +7,6 @@ namespace HtmlFilter;
 class Filter
 {
     /**
-     * List of valid html elements
-     * @var array htmlElements
-     */
-    protected htmlElements = [] {
-        set, get
-    };
-
-    /**
      * list of valid attributes
      * @var array attributes
      */
@@ -78,6 +70,11 @@ class Filter
     ] {
         get, set
     };
+
+    /**
+     * @var HtmlFilter\HtmlParser\Model\HtmlElement htmlElement
+     */
+    protected htmlElement;
 
     /**
      * @param array config
@@ -203,11 +200,29 @@ class Filter
     protected function getParser() -> <\HtmlFilter\HtmlParser>
     {
         if (this->parser == null) {
-            let this->parser = new \HtmlFilter\HtmlParser();
+            let this->parser = new \HtmlFilter\HtmlParser(
+                this->getHtmlElement()
+            );
         }
 
         return this->parser;
     }
+
+    /**
+     * Html Element model
+     *
+     * @return HtmlFilter\HtmlParser\Model\HtmlElement
+     */
+    protected function getHtmlElement() -> <\HtmlFilter\HtmlParser\Model\HtmlElement>
+    {
+        if (this->htmlElement == null) {
+            let this->htmlElement = new \HtmlFilter\HtmlParser\Model\HtmlElement();
+        }
+
+        return this->htmlElement;
+    }
+
+
 
     /**
      * Clear html comments or CDATA sections
@@ -326,7 +341,7 @@ class Filter
                 isset(element["permission"]) ? element["permission"] : 1
             );
 
-            this->getParser()->addHtmlTagAsValid(element["name"]);
+            this->getHtmlElement()->addHtmlElementAsValid(element["name"]);
         }
 
         return true;
