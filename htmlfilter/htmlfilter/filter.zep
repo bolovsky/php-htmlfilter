@@ -7,14 +7,6 @@ namespace HtmlFilter;
 class Filter
 {
     /**
-     * List of valid html elements
-     * @var array htmlElements
-     */
-    protected htmlElements = [] {
-        set, get
-    };
-
-    /**
      * list of valid attributes
      * @var array attributes
      */
@@ -50,26 +42,6 @@ class Filter
     };
 
     /**
-     * @var array elementBlacklist
-     */
-    protected elementPermissionList = [
-        "span": 1, "div": 1, "iframe": 1, "p": 1,
-        "strong": 1, "applet": 0, "video": 1, "small": 1,
-        "noscript": 1, "form": 1, "button": 1, "a": 1, "dt": 1,
-        "del": 1, "dd": 1, "fieldset": 1, "script": 0, "em": 1,
-        "ins": 1, "li": 1, "object": 1, "b": 1, "bdo": 1,
-        "td": 1, "th": 1, "abbr": 1, "acronym": 1, "address": 1,
-        "big": 1, "caption": 1, "cite": 1, "code": 1, "dfn": 1,
-        "font": 1, "h1: 1", "h2": 1, "h3": 1, "h4": 1, "h5": 1,
-        "h6": 1, "i": 1, "kbd": 1, "label": 1, "legend": 1,
-        "pre": 1, "q": 1, "rb": 1, "rt": 1, "s": 1, "samp": 1,
-        "span": 1, "strike": 1,"sub": 1, "sup": 1, "tt": 1,
-        "u": 1, "var": 1, "blockquote": 1, "map": 1, "input": 1
-    ] {
-        get, set
-    };
-
-    /**
      * @var array attributeBlacklist
      */
     protected attributePermissionList = [
@@ -78,6 +50,11 @@ class Filter
     ] {
         get, set
     };
+
+    /**
+     * @var HtmlFilter\HtmlParser\Model\HtmlElement htmlElement
+     */
+    protected htmlElement;
 
     /**
      * @param array config
@@ -203,11 +180,29 @@ class Filter
     protected function getParser() -> <\HtmlFilter\HtmlParser>
     {
         if (this->parser == null) {
-            let this->parser = new \HtmlFilter\HtmlParser();
+            let this->parser = new \HtmlFilter\HtmlParser(
+                this->getHtmlElement()
+            );
         }
 
         return this->parser;
     }
+
+    /**
+     * Html Element model
+     *
+     * @return HtmlFilter\HtmlParser\Model\HtmlElement
+     */
+    protected function getHtmlElement() -> <\HtmlFilter\HtmlParser\Model\HtmlElement>
+    {
+        if (this->htmlElement == null) {
+            let this->htmlElement = new \HtmlFilter\HtmlParser\Model\HtmlElement();
+        }
+
+        return this->htmlElement;
+    }
+
+
 
     /**
      * Clear html comments or CDATA sections
@@ -267,9 +262,7 @@ class Filter
      */
     public function isHtmlElementAllowed(string! tagName) -> boolean
     {
-        let tagName = strtolower(tagName);
-        return (isset(this->elementPermissionList[tagName])
-                && this->elementPermissionList[tagName] === 1);
+        return this->getHtmlElement()->isElementAllowed(tagName);
     }
 
     /**
@@ -319,28 +312,16 @@ class Filter
                 continue;
             }
 
-            let element["name"] = strtolower(element["name"]);
+            var elementName;
+            let elementName = strtolower(element["name"]);
+            unset(element["name"]);
 
-            this->changePermissionOfHtmlElement(
-                element["name"],
-                isset(element["permission"]) ? element["permission"] : 1
-            );
-
-            this->getParser()->addHtmlTagAsValid(element["name"]);
+            if !this->getHtmlElement()->addHtmlElement(elementName, element) {
+                return false;
+            }
         }
 
         return true;
-    }
-
-    /**
-     * Alters the permission for a certain html element.
-     *
-     * @param string elementName
-     * @param int permission
-     */
-    protected function changePermissionOfHtmlElement(string! elementName, int! permission=1)
-    {
-        let this->elementPermissionList[elementName] = permission;
     }
 
     /**

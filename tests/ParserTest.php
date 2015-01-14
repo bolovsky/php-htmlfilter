@@ -65,6 +65,42 @@ class ParserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Checks if new configured element is correctly parsed
+     *
+     * @param mixed $input
+     * @param mixed $possibleOutputs
+     * @param mixed $config
+     *
+     * @dataProvider getHtmlWithInvalidTagsAndConfigureAsValid
+     */
+    public function testConfigureNewElement($input, $possibleOutputs, $config)
+    {
+        $htmlArray = $this->htmlParser->parse(
+            $input
+        );
+
+        $out = "";
+        foreach ($htmlArray as $element) {
+            $out .= $element->getText();
+        }
+
+        $this->assertEquals($possibleOutputs['previousToConfig'],$out);
+
+        $this->htmlParser->getHtmlelement()->addHtmlElement($config);
+
+        $htmlArray = $this->htmlParser->parse(
+            $input
+        );
+
+        $out = "";
+        foreach ($htmlArray as $element) {
+            $out .= $element->getText();
+        }
+
+        $this->assertEquals($possibleOutputs['afterConfig'],$out);
+    }
+
+    /**
      * Html Data Provider
      *
      * @return array
@@ -139,6 +175,23 @@ class ParserTest extends PHPUnit_Framework_TestCase
                     array('class="test"', 'style="float: right;"'),
                 ),
             ),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getHtmlWithInvalidTagsAndConfigureAsValid()
+    {
+        return array(
+            'one valid tag, and one invalid' => array(
+                'input' => '<span>this shows always</span><invalidtag>this shows after configured</invalidtag>',
+                'output' => array(
+                    'previousToConfig' => '<span>this shows always</span>',
+                    'afterConfig' => '<span>this shows always</span><invalidtag>this shows after configured</invalidtag>'
+                ),
+                'config' => 'invalidtag'
+            )
         );
     }
 }

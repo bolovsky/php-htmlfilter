@@ -14,33 +14,32 @@ class HtmlParser
     };
 
     /**
-     * List of valid html tags
-     * @var array validHtmlTags
-     * @todo list is incomplete, quite a few tags missing
-     */
-    protected validHtmlTags = [
-        "span", "div", "iframe", "p",
-        "strong", "applet", "video",
-        "noscript", "form", "button", "a",
-        "del", "dd", "fieldset",
-        "iframe", "ins", "li", "object",
-        "td", "th", "abbr", "acronym", "address", "b", "bdo",
-        "big", "caption", "cite", "code", "dfn", "dt",
-        "em", "font", "h1", "h2", "h3", "h4", "h5",
-        "h6", "i", "kbd", "label", "legend",
-        "pre", "q", "rb", "rt", "s", "samp", "small",
-        "span", "strike","sub", "sup", "tt", "script",
-        "u", "var", "blockquote", "map", "input"
-    ] {
-        get, set
-    };
-
-    /**
      * Since zephir doesn't support pass by ref yet, need this in order to reduce the tags
      *
      * @var array tagsSet
      */
     protected tagsSet = [];
+
+    /**
+     * @var HtmlFilter\HtmlParser\Model\HtmlElement htmlElement
+     */
+    protected htmlElement{
+        get, set
+    };
+
+    /**
+     * Html Parser
+     */
+    public function __construct(htmlElement=null)
+    {
+        if !htmlElement {
+            let this->htmlElement
+                = new \HtmlFilter\HtmlParser\Model\HtmlElement();
+        } else {
+            let this->htmlElement = htmlElement;
+        }
+
+    }
 
     /**
      * Parses the provided text to obtain an array of htmlElements
@@ -54,7 +53,11 @@ class HtmlParser
         var result = [];
         var raw = [];
 
-        preg_match_all("/<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+(?<!\s)>|(?:[^<]*)/m", html, raw);//"@fixme remove this, syntax highlight wrong
+        preg_match_all(
+            "/<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+(?<!\s)>|(?:[^<]*)/m",
+            html,
+            raw
+        );//"@fixme remove this, syntax highlight wrong
 
         if is_array(raw) && isset(raw[0]) {
             let result = this->buildResult(
@@ -114,13 +117,13 @@ class HtmlParser
                 return false;
             }
 
-            let tag = new \HtmlFilter\HtmlParser\HtmlTag(tagName);
+            let tag = new \HtmlFilter\HtmlParser\HtmlTag(tagName, this->htmlElement);
 
             tag->setAttributes(
                 this->buildAttributes(tag->getTag(), tagText)
             );
 
-            if tag->isEmptyElement() {
+            if this->getHtmlElement()->isEmptyElement(tagName) {
                 return tag;
             }
 
@@ -130,7 +133,7 @@ class HtmlParser
 
             //to ensure no issue arise, discard all invalid/unrecognized html tags
             //this must be made at the end of parsing, to remove all inner elements
-            if !this->isTagValid(tagName) {
+            if !this->getHtmlElement()->isTagValid(tagName) {
                 return false;
             }
 
@@ -207,17 +210,6 @@ class HtmlParser
     }
 
     /**
-     * Verifies is a tag is in the whitelist of available tags
-     * @param string tag
-     *
-     * @return boolean
-     */
-    protected function isTagValid(const string! tag) -> boolean
-    {
-        return in_array(strtolower(tag), this->validHtmlTags);
-    }
-
-    /**
      * returns the tagName
      * @param string fullTag
      *
@@ -263,17 +255,5 @@ class HtmlParser
     protected function isEndTag(string! tagName) -> boolean
     {
         return !empty(preg_match("/<\\/\\s?\\w*\\s?>/is", tagName));
-    }
-
-    /**
-     * Adds a new html tag to the parser available tags
-     *
-     * @param string tagName
-     */
-    public function addHtmlTagAsValid(string! tagName)
-    {
-        if !in_array(tagName, this->validHtmlTags) {
-            let this->validHtmlTags[] = tagName;
-        }
     }
 }

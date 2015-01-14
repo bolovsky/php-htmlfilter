@@ -132,6 +132,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
                         array('name'=>'span', 'permission' => 0)
                     )
                 )
+            ),
+            'allowing html tag as empty test previous and after' => array(
+                'input' => '<div>but this is always visible</div><fakeinput class="but-this-after" />',
+                'output' => array(
+                    'previousToConfig' => '<div>but this is always visible</div>',
+                    'afterConfig' => '<div>but this is always visible</div><fakeinput class="but-this-after" />'
+                ),
+                'configuration' => array(
+                    'configureElements' => array(
+                        array('name'=>'fakeinput', 'permission' => 1, "empty" => 1)
+                    )
+                )
             )
         );
     }
