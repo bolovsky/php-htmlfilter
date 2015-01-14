@@ -86,7 +86,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($possibleOutputs['previousToConfig'],$out);
 
-        $this->htmlParser->getHtmlelement()->addHtmlElementAsValid($config);
+        $this->htmlParser->getHtmlelement()->addHtmlElement($config);
 
         $htmlArray = $this->htmlParser->parse(
             $input
