@@ -166,9 +166,9 @@ class HtmlElement extends HtmlModelAbstract
      */
     protected function validateConfiguration(array config) -> boolean
     {
-        var value;
-        for value in config {
-            if !in_array(value, this->validConfigurations) {
+        var key;
+        for key, _ in config {
+            if !in_array(key, this->validConfigurations) {
                 return false;
             }
         }

@@ -312,28 +312,16 @@ class Filter
                 continue;
             }
 
-            let element["name"] = strtolower(element["name"]);
+            var elementName;
+            let elementName = strtolower(element["name"]);
+            unset(element["name"]);
 
-            this->changePermissionOfHtmlElement(
-                element["name"],
-                isset(element["permission"]) ? element["permission"] : 1
-            );
-
-            this->getHtmlElement()->addHtmlElement(element["name"]);
+            if !this->getHtmlElement()->addHtmlElement(elementName, element) {
+                return false;
+            }
         }
 
         return true;
-    }
-
-    /**
-     * Alters the permission for a certain html element.
-     *
-     * @param string elementName
-     * @param int permission
-     */
-    protected function changePermissionOfHtmlElement(string! elementName, int! permission=1)
-    {
-        this->getHtmlElement()->addHtmlElement(elementName, ["permission": permission]);
     }
 
     /**
