@@ -169,6 +169,11 @@ class HtmlParser
             var tag;
             let tag = this->buildTag(text);
             if tag {
+                if (tag instanceof \HtmlFilter\HtmlParser\Model\HtmlElement)
+                    && !this->getHtmlElement()->isElementNestable(tag->getTag()) {
+                    continue;
+                }
+
                 let tmpTags[] = tag;
             }
         }

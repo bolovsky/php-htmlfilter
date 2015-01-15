@@ -101,6 +101,17 @@ class ParserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param $input
+     * @param $output
+     *
+     * @dataProvider getNestableData
+     */
+    public function testNestableElements($input, $output)
+    {
+
+    }
+
+    /**
      * Html Data Provider
      *
      * @return array
@@ -192,6 +203,23 @@ class ParserTest extends PHPUnit_Framework_TestCase
                 ),
                 'config' => 'invalidtag'
             )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNestableData()
+    {
+        return array(
+            'nestable elements kept' => array(
+                'input' => '<table><tr><td>should still be here</td></tr></table>',
+                'output' =>'<table><tr><td>should still be here</td></tr></table>',
+            ),
+            'nestable elements removed' => array(
+                'input' => '<span><tr><td>should still be here</td></tr></span>',
+                'output' =>'<span></span>',
+            ),
         );
     }
 }
