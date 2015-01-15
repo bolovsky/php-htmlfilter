@@ -144,6 +144,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
                         array('name'=>'fakeinput', 'permission' => 1, "empty" => 1)
                     )
                 )
+            ),
+            'making class empty' => array(
+                'input' => '<div>but this is always visible</div>',
+                'output' => array(
+                    'previousToConfig' => '<div>but this is always visible</div>',
+                    'afterConfig' => '<div />but this is always visible'
+                ),
+                'configuration' => array(
+                    'configureElements' => array(
+                        array('name'=>'div', 'permission' => 1, "empty" => 1)
+                    )
+                )
             )
         );
     }
