@@ -1,5 +1,7 @@
 <?php
 
+use \HtmlFilter\HtmlParser\Model\HtmlElement;
+
 /**
  * Class FilterTest
  */
@@ -117,7 +119,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'novalidelement', 'permission' => 1)
+                        array('name'=>'novalidelement', HtmlElement::IS_ALLOWED => 1)
                     )
                 )
             ),
@@ -129,7 +131,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'span', 'permission' => 0)
+                        array('name'=>'span', HtmlElement::IS_ALLOWED => 0)
                     )
                 )
             ),
@@ -141,7 +143,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'fakeinput', 'permission' => 1, "empty" => 1)
+                        array('name'=>'fakeinput', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
                     )
                 )
             ),
@@ -153,7 +155,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'div', 'permission' => 1, "empty" => 1)
+                        array('name'=>'div', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
                     )
                 )
             ),
@@ -165,7 +167,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'span', 'permission' => 1, "nestable" => 0)
+                        array('name'=>'span', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_NESTABLE => 0)
                     )
                 )
             ),

@@ -2,17 +2,11 @@ namespace HtmlFilter\HtmlParser\Model;
 
 class HtmlElement extends HtmlModelAbstract
 {
-    /**
-     * Holds the html elements that are considered empty
-     * @var array emptyElements
-     */
-    protected emptyElements = [
-        "area", "br", "col",
-        "embed", "hr", "img",
-        "input", "isindex", "param"
-    ] {
-        get, set
-    };
+    const IS_EMPTY = "empty";
+    const IS_ALLOWED = "permission";
+    const IS_NESTABLE = "nestable";
+    const ELEMENTS_ALLOWED_TO_NEST = "nests";
+    const ELEMENT_MAY_NEST_IN = "resides";
 
     /**
      * List of valid html tags
@@ -20,7 +14,7 @@ class HtmlElement extends HtmlModelAbstract
      * @todo list is incomplete, quite a few tags missing
      */
     protected validHtmlElements = [
-        "span": ["permission": 1, "nestable": 1], 
+        "span": ["permission" : 1, "nestable": 1],
         "div": ["permission": 1, "nestable": 1], 
         "iframe": ["permission": 1, "nestable": 1], 
         "p": ["permission": 1, "nestable": 1],
@@ -105,7 +99,11 @@ class HtmlElement extends HtmlModelAbstract
      *
      */
     protected validConfigurations = [
-        "empty", "permission", "nestable", "nests", "resides"
+        self::IS_EMPTY,
+        self::IS_ALLOWED,
+        self::IS_NESTABLE,
+        self::ELEMENTS_ALLOWED_TO_NEST,
+        self::ELEMENT_MAY_NEST_IN
     ];
 
     /**
