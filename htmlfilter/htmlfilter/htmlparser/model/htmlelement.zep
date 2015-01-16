@@ -161,24 +161,48 @@ class HtmlElement extends HtmlModelAbstract
      *
      * @return boolean
      */
-    public function isElementNestable(string tag, string parent="") -> boolean
+    public function isElementNestable(string element) -> boolean
     {
         var nestable;
-        let nestable = this->getElementRule(tag, "permission") == 1;
+        let nestable = this->getElementRule(element, "nestable") == 1;
 
-        if parent && isset(this->validHtmlElements[strtolower(parent)]["nests"]) {
-            let nestable = nestable && in_array(
-                strtolower(tag),
-                this->validHtmlElements[strtolower(parent)]["nests"]
+        return nestable;
+    }
+
+    /**
+     * Asserts the parent element can hold this specific child
+     * (or any for that matter)
+     *
+     * @param string element
+     * @param string parentElement
+     *
+     * @return boolean
+     */
+    public function isParentNestable(string element, string parentElement)
+    {
+        var nestable;
+        let nestable = this->getElementRule(parentElement, "nestable") == 1;
+
+        if nestable
+            && parentElement
+            && isset(this->validHtmlElements[strtolower(parentElement)]["nests"])
+        {
+            let nestable = in_array(
+                strtolower(element),
+                this->validHtmlElements[strtolower(parentElement)]["nests"]
             );
         }
 
-        if parent && isset(this->validHtmlElements[strtolower(tag)]["resides"]) {
-            let nestable = nestable && in_array(
-                strtolower(parent),
-                this->validHtmlElements[strtolower(tag)]["resides"]
+        if nestable
+            && parentElement
+            && isset(this->validHtmlElements[strtolower(element)]["resides"])
+        {
+            let nestable = in_array(
+                strtolower(parentElement),
+                this->validHtmlElements[strtolower(element)]["resides"]
             );
         }
+
 
         return nestable;
     }

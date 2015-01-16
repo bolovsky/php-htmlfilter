@@ -156,7 +156,19 @@ class FilterTest extends PHPUnit_Framework_TestCase
                         array('name'=>'div', 'permission' => 1, "empty" => 1)
                     )
                 )
-            )
+            ),
+            'nestable elements removed' => array(
+                'input' => '<span><div>should not be here after config</div></span>',
+                'output' => array(
+                    'previousToConfig' => '<span><div>should not be here after config</div></span>',
+                    'afterConfig' => '<span></span>'
+                ),
+                'configuration' => array(
+                    'configureElements' => array(
+                        array('name'=>'span', 'permission' => 1, "nestable" => 0)
+                    )
+                )
+            ),
         );
     }
 
