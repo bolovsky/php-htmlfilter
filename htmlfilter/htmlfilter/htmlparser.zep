@@ -38,7 +38,6 @@ class HtmlParser
         } else {
             let this->htmlElement = htmlElement;
         }
-
     }
 
     /**
@@ -169,6 +168,12 @@ class HtmlParser
             var tag;
             let tag = this->buildTag(text);
             if tag {
+                if (tag instanceof \HtmlFilter\HtmlParser\HtmlTag)
+                    && !this->getHtmlElement()->isParentNestable(tag->getTag(), openTag)
+                {
+                    continue;
+                }
+
                 let tmpTags[] = tag;
             }
         }

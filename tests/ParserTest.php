@@ -38,6 +38,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $out .= $element->getText();
         }
 
+        $this->assertContainsOnlyInstancesOf('HtmlFilter\HtmlParser\TextInterface', $htmlArray);
         $this->assertInternalType('array', $htmlArray);
         $this->assertEquals($outputValue,$out);
     }
@@ -98,6 +99,26 @@ class ParserTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals($possibleOutputs['afterConfig'],$out);
+    }
+
+    /**
+     * @param $input
+     * @param $output
+     *
+     * @dataProvider getNestableData
+     */
+    public function testNestableElements($input, $output)
+    {
+        $htmlArray = $this->htmlParser->parse(
+            $input
+        );
+
+        $out = "";
+        foreach ($htmlArray as $element) {
+            $out .= $element->getText();
+        }
+
+        $this->assertEquals($output, $out);
     }
 
     /**
@@ -192,6 +213,23 @@ class ParserTest extends PHPUnit_Framework_TestCase
                 ),
                 'config' => 'invalidtag'
             )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getNestableData()
+    {
+        return array(
+            'nestable elements kept' => array(
+                'input' => '<table><tr><td>should still be here</td></tr></table>',
+                'output' =>'<table><tr><td>should still be here</td></tr></table>',
+            ),
+            'nestable elements removed' => array(
+                'input' => '<span><tr><td>should still be here</td></tr></span>',
+                'output' =>'<span></span>',
+            ),
         );
     }
 }
