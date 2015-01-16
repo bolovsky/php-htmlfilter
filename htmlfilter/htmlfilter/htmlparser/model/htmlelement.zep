@@ -5,7 +5,7 @@ class HtmlElement extends HtmlModelAbstract
     const IS_EMPTY = "empty";
     const IS_ALLOWED = "permission";
     const IS_NESTABLE = "nestable";
-    const ELEMENTS_ALLOWED_TO_NEST = "nests";
+    const ELEMENT_ALLOWS_TO_NEST = "nests";
     const ELEMENT_MAY_NEST_IN = "resides";
 
     /**
@@ -102,7 +102,7 @@ class HtmlElement extends HtmlModelAbstract
         self::IS_EMPTY,
         self::IS_ALLOWED,
         self::IS_NESTABLE,
-        self::ELEMENTS_ALLOWED_TO_NEST,
+        self::ELEMENT_ALLOWS_TO_NEST,
         self::ELEMENT_MAY_NEST_IN
     ];
 
@@ -141,7 +141,7 @@ class HtmlElement extends HtmlModelAbstract
      */
     public function isEmptyElement(string tag) -> boolean
     {
-        return this->getElementRule(tag, "empty") == 1;
+        return this->getElementRule(tag, self::IS_EMPTY) == 1;
     }
 
     /**
@@ -151,7 +151,7 @@ class HtmlElement extends HtmlModelAbstract
      */
     public function isElementAllowed(string tag) -> boolean
     {
-        return this->getElementRule(tag, "permission") == 1;
+        return this->getElementRule(tag, self::IS_ALLOWED) == 1;
     }
 
     /**
@@ -162,7 +162,7 @@ class HtmlElement extends HtmlModelAbstract
     public function isElementNestable(string element) -> boolean
     {
         var nestable;
-        let nestable = this->getElementRule(element, "nestable") == 1;
+        let nestable = this->getElementRule(element, self::IS_NESTABLE) == 1;
 
         return nestable;
     }
@@ -179,25 +179,25 @@ class HtmlElement extends HtmlModelAbstract
     public function isParentNestable(string element, string parentElement)
     {
         var nestable;
-        let nestable = this->getElementRule(parentElement, "nestable") == 1;
+        let nestable = this->getElementRule(parentElement, self::IS_NESTABLE) == 1;
 
         if nestable
             && parentElement
-            && isset(this->validHtmlElements[strtolower(parentElement)]["nests"])
+            && isset(this->validHtmlElements[strtolower(parentElement)][self::ELEMENT_ALLOWS_TO_NEST])
         {
             let nestable = in_array(
                 strtolower(element),
-                this->validHtmlElements[strtolower(parentElement)]["nests"]
+                this->validHtmlElements[strtolower(parentElement)][self::ELEMENT_ALLOWS_TO_NEST]
             );
         }
 
         if nestable
             && parentElement
-            && isset(this->validHtmlElements[strtolower(element)]["resides"])
+            && isset(this->validHtmlElements[strtolower(element)][self::ELEMENT_MAY_NEST_IN])
         {
             let nestable = in_array(
                 strtolower(parentElement),
-                this->validHtmlElements[strtolower(element)]["resides"]
+                this->validHtmlElements[strtolower(element)][self::ELEMENT_MAY_NEST_IN]
             );
         }
 
@@ -226,9 +226,9 @@ class HtmlElement extends HtmlModelAbstract
             let this->validHtmlElements[element][key] = value;
         }
 
-        if !isset(this->validHtmlElements[element]["permission"]) {
-            let this->validHtmlElements[element]["permission"] = 1;
-            let this->validHtmlElements[element]["nestable"] = 1;
+        if !isset(this->validHtmlElements[element][self::IS_ALLOWED]) {
+            let this->validHtmlElements[element][self::IS_ALLOWED] = 1;
+            let this->validHtmlElements[element][self::IS_NESTABLE] = 1;
         }
 
         return true;

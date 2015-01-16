@@ -38,6 +38,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $out .= $element->getText();
         }
 
+        $this->assertContainsOnlyInstancesOf('HtmlFilter\HtmlParser\TextInterface', $htmlArray);
         $this->assertInternalType('array', $htmlArray);
         $this->assertEquals($outputValue,$out);
     }
@@ -108,7 +109,16 @@ class ParserTest extends PHPUnit_Framework_TestCase
      */
     public function testNestableElements($input, $output)
     {
+        $htmlArray = $this->htmlParser->parse(
+            $input
+        );
 
+        $out = "";
+        foreach ($htmlArray as $element) {
+            $out .= $element->getText();
+        }
+
+        $this->assertEquals($output, $out);
     }
 
     /**
