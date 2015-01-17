@@ -2,8 +2,8 @@ namespace HtmlFilter\HtmlParser\Model;
 
 class HtmlElement extends HtmlModelAbstract
 {
-    const IS_EMPTY = "empty";
     const IS_ALLOWED = "permission";
+    const IS_EMPTY = "empty";
     const IS_NESTABLE = "nestable";
     const ELEMENT_ALLOWS_TO_NEST = "nests";
     const ELEMENT_MAY_NEST_IN = "resides";
@@ -96,7 +96,7 @@ class HtmlElement extends HtmlModelAbstract
 
     /**
      * Valid types of configurations allowed
-     *
+     * {@inheritdoc}
      */
     protected validConfigurations = [
         self::IS_EMPTY,
@@ -229,25 +229,6 @@ class HtmlElement extends HtmlModelAbstract
         if !isset(this->validHtmlElements[element][self::IS_ALLOWED]) {
             let this->validHtmlElements[element][self::IS_ALLOWED] = 1;
             let this->validHtmlElements[element][self::IS_NESTABLE] = 1;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates that all given keys are available configurations
-     *
-     * @param array config
-     *
-     * @return boolean
-     */
-    protected function validateConfiguration(array config) -> boolean
-    {
-        var key;
-        for key, _ in config {
-            if !in_array(key, this->validConfigurations) {
-                return false;
-            }
         }
 
         return true;
