@@ -7,14 +7,6 @@ namespace HtmlFilter;
 class Filter
 {
     /**
-     * list of valid attributes
-     * @var array attributes
-     */
-    protected attributes = [] {
-        set, get
-    };
-
-    /**
      * Holds the regular replacers fo html "dangerous" chars
      * @var array replacers
      */
@@ -42,19 +34,15 @@ class Filter
     };
 
     /**
-     * @var array attributeBlacklist
-     */
-    protected attributePermissionList = [
-        "class": 1, "name": 1, "id": 0, "style": 1,
-        "onfocus": 0, "onblur": 0, "onclick": 0, "onsubmit": 0
-    ] {
-        get, set
-    };
-
-    /**
      * @var HtmlFilter\HtmlParser\Model\HtmlElement htmlElement
      */
     protected htmlElement;
+
+
+    /**
+     * @var HtmlFilter\HtmlParser\Model\HtmlAttribute htmlAttribute
+     */
+    protected htmlAttribute;
 
     /**
      * @param array config
@@ -202,7 +190,19 @@ class Filter
         return this->htmlElement;
     }
 
+    /**
+     * Html Attribute model
+     *
+     * @return HtmlFilter\HtmlParser\Model\HtmlAttribute
+     */
+    protected function getHtmlAttribute() -> <\HtmlFilter\HtmlParser\Model\HtmlAttribute>
+    {
+        if (this->htmlAttribute == null) {
+            let this->htmlAttribute = new \HtmlFilter\HtmlParser\Model\HtmlAttribute();
+        }
 
+        return this->htmlAttribute;
+    }
 
     /**
      * Clear html comments or CDATA sections
@@ -262,7 +262,8 @@ class Filter
      */
     public function isHtmlElementAllowed(string! tagName) -> boolean
     {
-        return this->getHtmlElement()->isElementAllowed(tagName);
+        return this->getHtmlElement()
+            ->isElementAllowed(tagName);
     }
 
     /**
@@ -273,15 +274,8 @@ class Filter
      */
     public function isHtmlElementAttributeAllowed(string! attribute) -> boolean
     {
-        let attribute = strtolower(attribute);
-
-        var splitAttribute = [];
-        let splitAttribute = explode("=", attribute);
-
-        let attribute = trim(splitAttribute[0]);
-
-        return (isset(this->attributePermissionList[attribute])
-                && this->attributePermissionList[attribute] === 1);
+        return this->getHtmlAttribute()
+            ->isHtmlElementAttributeAllowed(attribute);
     }
 
     /**
@@ -306,16 +300,8 @@ class Filter
             return false;
         }
 
-        var element;
-        for element in elements {
-            if (!isset(element["name"])) {
-                continue;
-            }
-
-            var elementName;
-            let elementName = strtolower(element["name"]);
-            unset(element["name"]);
-
+        var element, elementName;
+        for elementName, element in elements {
             if !this->getHtmlElement()->addHtmlElement(elementName, element) {
                 return false;
             }
@@ -345,16 +331,13 @@ class Filter
             return false;
         }
 
-        var attribute;
-        for attribute in attributes {
-            if (!isset(attribute["name"])) {
-                continue;
+        var attributeName, attribute;
+        for attributeName, attribute in attributes {
+            let attributeName = strtolower(attributeName);
+
+            if !this->getHtmlAttribute()->addHtmlElementAttribute(attributeName, attribute) {
+                return false;
             }
-
-            let attribute["name"] = strtolower(attribute["name"]);
-
-            let this->attributePermissionList[attribute["name"]] =
-                isset(attribute["permission"]) ? attribute["permission"] : 1;
         }
 
         return true;

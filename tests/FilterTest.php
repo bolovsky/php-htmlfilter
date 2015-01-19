@@ -1,6 +1,7 @@
 <?php
 
 use \HtmlFilter\HtmlParser\Model\HtmlElement;
+use \HtmlFilter\HtmlParser\Model\HtmlAttribute;
 
 /**
  * Class FilterTest
@@ -119,7 +120,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'novalidelement', HtmlElement::IS_ALLOWED => 1)
+                        'novalidelement' => array(HtmlElement::IS_ALLOWED => 1)
                     )
                 )
             ),
@@ -131,7 +132,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'span', HtmlElement::IS_ALLOWED => 0)
+                        'span' => array(HtmlElement::IS_ALLOWED => 0)
                     )
                 )
             ),
@@ -143,7 +144,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'fakeinput', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
+                        'fakeinput' => array(HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
                     )
                 )
             ),
@@ -155,7 +156,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'div', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
+                        'div' => array(HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_EMPTY => 1)
                     )
                 )
             ),
@@ -167,7 +168,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureElements' => array(
-                        array('name'=>'span', HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_NESTABLE => 0)
+                        'span' => array(HtmlElement::IS_ALLOWED => 1, HtmlElement::IS_NESTABLE => 0)
                     )
                 )
             ),
@@ -188,7 +189,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureAttributes' => array(
-                        array('name'=>'novalidattribute', 'permission' => 1)
+                        'novalidattribute'=> array(HtmlAttribute::IS_ALLOWED => 1)
                     )
                 )
             ),
@@ -200,7 +201,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
                 ),
                 'configuration' => array(
                     'configureAttributes' => array(
-                        array('name'=>'class', 'permission' => 0)
+                        'class' => array(HtmlAttribute::IS_ALLOWED => 0)
                     )
                 )
             )
