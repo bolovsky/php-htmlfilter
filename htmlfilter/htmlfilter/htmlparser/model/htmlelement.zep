@@ -7,6 +7,7 @@ class HtmlElement extends HtmlModelAbstract
     const IS_NESTABLE = "nestable";
     const ELEMENT_ALLOWS_TO_NEST = "nests";
     const ELEMENT_MAY_NEST_IN = "resides";
+    const MATCH_PATTERN = "match_pattern";
 
     /**
      * List of valid html tags
@@ -103,7 +104,8 @@ class HtmlElement extends HtmlModelAbstract
         self::IS_ALLOWED,
         self::IS_NESTABLE,
         self::ELEMENT_ALLOWS_TO_NEST,
-        self::ELEMENT_MAY_NEST_IN
+        self::ELEMENT_MAY_NEST_IN,
+        self::MATCH_PATTERN
     ];
 
     /**
@@ -203,6 +205,17 @@ class HtmlElement extends HtmlModelAbstract
 
 
         return nestable;
+    }
+
+    /**
+     * Returns the match pattern rule if available
+     *
+     * @param string element
+     * @return mixed
+     */
+    public function getPatternToMatch(string element)
+    {
+        return this->getElementRule(element, self::MATCH_PATTERN);
     }
 
     /**

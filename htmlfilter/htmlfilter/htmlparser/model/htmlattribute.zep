@@ -23,7 +23,8 @@ class HtmlAttribute extends HtmlModelAbstract
         "onfocus": ["permission": 0], 
         "onblur": ["permission": 0], 
         "onclick": ["permission": 0],
-         "onsubmit": 0
+        "onsubmit": ["permission": 0],
+        "src": ["permission": 1]
     ] {
         get, set
     };
@@ -33,6 +34,7 @@ class HtmlAttribute extends HtmlModelAbstract
      * is allowed in the attributePermissionList
      *
      * @param string attribute
+     * @return boolean
      */
     public function isHtmlElementAttributeAllowed(string attribute) -> boolean
     {
@@ -45,6 +47,34 @@ class HtmlAttribute extends HtmlModelAbstract
 
         return (isset(this->attributePermissionList[attribute])
                 && this->attributePermissionList[attribute][self::IS_ALLOWED] == 1);
+    }
+
+    /**
+     * Checks if the given tag as a matched pattern in attribute
+     *
+     * @param array attributes
+     * @param string pattern
+     * @return boolean
+     */
+    public function isPatternMatched(array attributes, string pattern) -> boolean
+    {
+        var attribute;
+        var result = [];
+        var_dump(attributes, pattern);
+        //no pattern means no validation, and no generic rules
+        if !pattern {
+            return true;
+        }
+
+        for attribute in attributes {
+            preg_match(attribute, pattern, result);
+
+            if count(result) > 0 {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

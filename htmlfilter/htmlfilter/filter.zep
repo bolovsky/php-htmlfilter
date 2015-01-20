@@ -130,6 +130,22 @@ class Filter
                     }
                 }
 
+                if tag->getTag() == "iframe" {
+                    var_dump(this->getHtmlElement()->getPatternToMatch(tag->getTag()));
+                }
+
+                //this checks if a pattern was provided and if it is followed
+                if this->getHtmlElement()->getPatternToMatch(tag->getTag())
+                    && !this->getHtmlAttribute()->isPatternMatched(
+                        cleanAttributes,
+                        this->getHtmlElement()->getPatternToMatch(tag->getTag())
+                    )
+                {
+                    continue;
+                }
+
+                echo "yeah, here, \n";
+
                 if tag->hasChildren() {
                     tag->setChildren(
                         this->cleanTags(

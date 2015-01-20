@@ -172,6 +172,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
                     )
                 )
             ),
+            'special matching rule' => array(
+                'input' => '<iframe src="somemalicioussomething">should not be here after config</iframe><span>only this</span>',
+                'output' => array(
+                    'previousToConfig' => '<iframe src="somemalicioussomething">should not be here after config</iframe><span>only this</span>',
+                    'afterConfig' => '<span>only this</span>'
+                ),
+                'configuration' => array(
+                    'configureElements' => array(
+                        'iframe' => array(HtmlElement::IS_ALLOWED => 1, HtmlElement::MATCH_PATTERN => '/src\s*=\s*[\'"]http:\/\/youtube.com([^\'"])[\'"]/')
+                    )
+                )
+            ),
         );
     }
 
